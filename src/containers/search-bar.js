@@ -6,7 +6,7 @@ import { fetchWeather } from "../actions/index";
 class SearchBar extends Component {
   constructor(props) {
     super(props);
-    this.state = { term: "" };
+    this.state = { term: "", error: false };
     this.onInputChange = this.onInputChange.bind(this);
     this.onFormSubmit = this.onFormSubmit.bind(this);
 
@@ -15,31 +15,57 @@ class SearchBar extends Component {
   }
 
   onInputChange(event) {
-    this.setState({ term: event.target.value });
+    this.setState({ term: event.target.value, error: false });
   }
   onFormSubmit(event) {
     event.preventDefault();
     //tells browser not to submit the form
     //burada apiden veri çekmemiz gerek
-
-    this.props.fetchWeather(this.state.term);
+    this.props
+      .fetchWeather(this.state.term)
+      .then(res => {})
+      .catch(err => {
+        this.setState({ error: true });
+      });
     this.setState({ term: "" });
   }
 
   render() {
     return (
-      <form onSubmit={this.onFormSubmit} className="input-group">
-        <input
-          value={this.state.term}
-          onChange={this.onInputChange}
-          placeholder="Get a five-day forecast in your favorite cities"
-          //TODO:form-control, inputu butona kadar uzattı !
-          className="form-control"
-        />
-        <span className="input-group-btn">
-          <button className="btn btn-secondary">Submit</button>
-        </span>
-      </form>
+      <div>
+        <div className="row">
+          <form onSubmit={this.onFormSubmit} className="input-group">
+            <input
+              value={this.state.term}
+              onChange={this.onInputChange}
+              placeholder="Get a five-day forecast in your favorite cities"
+              //TODO:form-control, inputu butona kadar uzattı !
+              className="form-control"
+            />
+
+            <span className="input-group-btn">
+              <button className="btn btn-secondary">Submit</button>
+            </span>
+          </form>
+        </div>
+        <div className="row">
+          {this.state.error && (
+            <div>
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  marginTop: -15,
+                  marginLeft: 2,
+                  position: "absolute",
+                  color: "red"
+                }}
+              >
+                City not found.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     );
   }
 }
